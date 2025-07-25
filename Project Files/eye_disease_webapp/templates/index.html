@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Eye Disease Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 40px;
+            background-color: #f0f8ff;
+        }
+        .upload-box {
+            border: 2px dashed #aaa;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: white;
+            display: inline-block;
+        }
+        #preview {
+            margin-top: 20px;
+            max-width: 300px;
+        }
+        .result {
+            font-size: 20px;
+            color: green;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Eye Disease Detection</h1>
+
+    <div class="upload-box">
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="file" name="file" id="file-input" accept="image/*" required><br><br>
+            <button type="submit">Predict</button>
+        </form>
+    </div>
+
+    <img id="preview" src="#" alt="Uploaded Eye Image" style="display:none;"><br>
+
+    <div class="result" id="prediction-result"></div>
+
+    <script>
+        const form = document.getElementById("upload-form");
+        const fileInput = document.getElementById("file-input");
+        const preview = document.getElementById("preview");
+        const resultBox = document.getElementById("prediction-result");
+
+        // Show image preview
+        fileInput.addEventListener("change", () => {
+            const file = fileInput.files[0];
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = "block";
+            }
+        });
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+
+            resultBox.textContent = "Predicting...";
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            resultBox.textContent = "Prediction: " + data.prediction;
+        });
+    </script>
+</body>
+</html>
